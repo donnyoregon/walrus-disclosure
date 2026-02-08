@@ -74,6 +74,31 @@ c480fd80 | Fake:2025-12-15 16:20:21 -0800 | Real:2025-12-16 00:20:21 +0000
 
 ---
 
+## Evidence Files
+
+```text
+walrus-disclosure/
+├── README.md                          (this file)
+├── FULL_DISCLOSURE.md                 (complete technical analysis)
+├── FORGERY_REPORT.txt                 (54 commits with date discrepancy analysis)
+├── TRUE_CHRONOLOGY.csv                (commit timeline data)
+├── evidence/                          (raw evidence files)
+│   ├── DECEMBER_CODE_CHANGES.diff     (3MB - all December code changes)
+│   ├── BRADLEY_SECRET_PATCH.diff      (cover-up commit by Will Bradley)
+│   ├── SHADOW_PATCH_MANIFEST.txt      (all shadowed patch details)
+│   └── walrus evidence proof          (git show of stealth fix commit)
+└── disclosure-evidence-2026/
+    ├── hackenproof_submission.webm    (16MB video of submission process)
+    ├── STEALTH_FIX_COMMIT_PROOF.txt   (commit f3d9c388 with code diff)
+    ├── BACKDATING_AUDIT.txt           (timestamp manipulation evidence)
+    ├── BRADLEY_SECRET_PATCH.diff      (cover-up commit diff)
+    ├── LABEL_LAUNDERING_LOG.txt       (chore label on security fixes)
+    ├── Screenshot_20251224.png        (December 24 evidence)
+    └── WALRUS_FRAUD_EVIDENCE_*.png    (fraud documentation screenshot)
+```
+
+---
+
 ## The Hacken Proof Problem
 
 The report was submitted through proper channels. Response: **Nothing.**
