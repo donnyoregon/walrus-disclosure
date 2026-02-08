@@ -17,30 +17,33 @@ Critical security changes in Walrus were hidden behind routine "maintenance" com
 
 ### The Issue
 
-A critical stability failure caused **valid user data to be accidentally deleted** by the storage nodes. Due to race conditions and the lack of atomic database transactions, the garbage collector would erroneously identify active blobs as "retired" and permanently purge them from disk.
+Garbage collection and data deletion were **disabled by default**, creating a data persistence vulnerability where data that should have been deleted remained accessible.
 
 ### The Technical Vulnerability
 
-The underlying issue was a specific interaction between **Epoch Desynchronization** and **Non-Atomic State Updates**:
+While the `enable_data_deletion: false` default was the primary blocker, the underlying issue was a complex set of **Race Conditions and Epoch Desyncs** that made data deletion unreliable even when enabled.
 
-#### 1. The Checkpoint Race Condition
+#### 1. The BlobRetirementNotify Deadlock (Commit `6aba4f7b`)
 
-During epoch transitions, nodes update their view of the storage set. Without atomic DB transactions (`enable_db_transactions: false`), a race condition allowed the node's "View" of valid blobs to desync from the "Storage" on disk.
+The system failed to process `BlobRetirementNotify` events due to a race condition in the event loop:
 
-#### 2. False Positive Garbage Collection
+- **Mechanism**: The `tokio::select!` macro was biased, causing the `BlobRetirementNotify` handler to be starved by higher-frequency events (like new blob registrations).
+- **Result**: Deletion signals were dropped or indefinitely delayed. The garbage collector never received the "retirement" signal, so it treated deleted blobs as active forever.
 
-When the `catchup` process raced with `checkpoint tailing` (Commit `c9af7894`), the node could enter a state where it believed valid blobs belonged to a "stale" epoch. The Garbage Collector, failing to see the blob's liveness proof in the current (desynced) view, would execute a hard delete.
+#### 2. Epoch Synchronization Failure (Commit `c9af7894`)
 
-#### 3. Result: Critical Data Loss
+A critical race condition existed between the node's `catchup` process and `checkpoint tailing`:
 
-Users who stored data believing it was safe would find their blobs vanished after a node restart or epoch change.
+- **Mechanism**: When a node attempted to sync with the current epoch, the `catchup` logic could race with the live `tailing` logic.
+- **Result**: The node would enter a desynchronized state where it believed it was up-to-date but was actually viewing an stale epoch state. In this state, it would reject valid deletion certificates because they corresponded to future epochs from its perspective.
 
 ### The Stealth Fix (Commit `f3d9c388`)
 
 On Dec 19, 2025, commit `f3d9c388` patched these issues by:
 
-1. **Enabling Atomic DB Transactions** (`enable_db_transactions: true`): Ensuring that state updates (like epoch changes) happen all-or-nothing, preventing the desync window.
-2. **Enabling Safe Garbage Collection**: Turning on the cleanup logic *only* when wrapped in these new transaction safety guarantees.
+1. Enabling `enable_data_deletion: true` (defaulting to ON).
+2. Implementing atomic DB transactions to prevent partial state updates during epoch transitions.
+3. Forcing garbage collection to run synchronously with epoch changes.
 
 Crucially, this commit was labeled:
 > "chore(node): enable DB transactions and garbage collection by default (#2772)"
@@ -110,7 +113,7 @@ See `disclosure-evidence-2026/hackenproof_submission.webm` and `WALRUS_FRAUD_EVI
 | Factor | Rating |
 |--------|--------|
 | **Severity** | **CRITICAL** |
-| **Data Impact** | **Accidental Deletion of Valid User Data** |
+| **Data Impact** | **Persistent data that should be deleted** |
 | **Cover-Up Severity** | **Extreme** (Forgery, Lies, Shadow Patching) |
 
 ---

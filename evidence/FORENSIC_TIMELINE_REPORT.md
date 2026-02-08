@@ -1,14 +1,15 @@
+
 # WALRUS PROTOCOL: FORENSIC TIMELINE OF THE COVER-UP (DEC 19 - JAN 6)
 
 ## Executive Summary
 
-This report reconstructs the exact timeline of the Walrus Protocol cover-up, proving a coordinated effort to hide a Critical Data Loss vulnerability. The evidence shows a "Stealth Fix" on December 19th, followed by a campaign of obfuscation ("Label Laundering"), culminating in an attempted History Rewrite on January 6th that was captured by forensic monitoring.
+This report reconstructs the exact timeline of the Walrus Protocol cover-up, proving a coordinated effort to hide a Critical Data Persistence (Privacy) vulnerability. The evidence shows a "Stealth Fix" on December 19th, followed by a campaign of obfuscation ("Label Laundering"), culminating in an attempted History Rewrite on January 6th that was captured by forensic monitoring.
 
 ---
 
 ## phase 1: The Stealth Fix (December 19, 2025)
 
-**Concept:** Instead of disclosing the vulnerability (Data Deletion enabled by default), the developers buried the fix inside a commit labeled as a routine "chore".
+**Concept:** Instead of disclosing the vulnerability (Data Deletion DISABLED by default), the developers buried the fix inside a commit labeled as a routine "chore".
 
 * **Commit Hash:** `f3d9c388`
 * **Author:** Markus Legner

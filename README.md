@@ -15,21 +15,25 @@ Critical security changes in Walrus were hidden behind routine "maintenance" com
 
 ## Vulnerability Details
 
+## Vulnerability Details
+
 ### The Issue
 
-A critical race condition and lack of atomic database transactions caused **valid user data to be accidentally deleted**. Instead of preserving stored blobs, the node would erroneously mark them for garbage collection during epoch transitions, leading to permanent data loss.
+Garbage collection and data deletion were **disabled by default**, creating a critical data persistence vulnerability where data that should have been deleted remained accessible indefinitely. This is a severe GDPR/Compliance violation.
 
 ### The Stealth Fix
 
-In commit `f3d9c388`, the developers secretly enabled **database transactions** (`enable_db_transactions`) and garbage collection safety mechanisms to prevent this corruption.
+In commit `f3d9c388`, the developers secretly enabled **data deletion** and **garbage collection** to fix this configuration.
 
-The diff shows them enabling these protections by default:
+The diff shows them enabling these features by default:
 
 ```diff
 - enable_db_transactions: false,
 - enable_blob_info_cleanup: false,
+- enable_data_deletion: false,
 + enable_db_transactions: true,
 + enable_blob_info_cleanup: true,
++ enable_data_deletion: true,
 ```
 
 This security-critical change was labeled as a routine "chore":
