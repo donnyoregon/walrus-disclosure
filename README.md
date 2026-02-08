@@ -66,11 +66,12 @@ c480fd80 | Fake:2025-12-15 16:20:21 -0800 | Real:2025-12-16 00:20:21 +0000
 
 | Date | Event |
 | ------ | ------- |
-| Dec 2025 | Vulnerability discovered |
-| Dec 2025 | Reported via Hacken Proof |
-| Dec 19, 2025 | Commit f3d9c388 deploys fix as "chore" |
-| Dec 30, 2025 | Additional obfuscating commits |
-| Feb 2026 | **IGNORED** - No response from platform |
+| December 2, 2025 | Vulnerability research began |
+| December 2025 | Reported via Hacken Proof |
+| December 19, 2025 | Commit f3d9c388 deploys security fix as "chore" |
+| December 30, 2025 | Additional obfuscating commits (Will Bradley) |
+| December 31, 2025 | Forensic analysis completed, evidence archived |
+| February 2026 | **Gaslighting responses** from HackenProof - no payout |
 
 ---
 
@@ -99,11 +100,15 @@ walrus-disclosure/
 
 ---
 
-## The Hacken Proof Problem
+## The HackenProof Problem
 
-The report was submitted through proper channels. Response: **Nothing.**
+The report was submitted through proper channels on December 2, 2025. The response was not professional:
 
-No acknowledgment. No rejection. No payout. Just silence while the vulnerability was patched.
+1. **Gaslighting**: Responses that denied the validity of the issue while simultaneously patching it.
+2. **Obfuscation**: The security fix was hidden behind a "chore" commit (`f3d9c388`) to avoid attribution.
+3. **No Bounty**: Despite a valid Critical/High vulnerability that was patched, no bounty was paid.
+
+See `disclosure-evidence-2026/hackenproof_submission.webm` for the submission record.
 
 ---
 
