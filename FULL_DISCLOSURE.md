@@ -17,21 +17,32 @@ Critical security changes in Walrus were hidden behind routine "maintenance" com
 
 ### The Issue
 
-Garbage collection and data deletion were **disabled by default**, creating a data persistence vulnerability where data that should have been deleted remained accessible.
+A critical stability failure caused **valid user data to be accidentally deleted** by the storage nodes. Due to race conditions and the lack of atomic database transactions, the garbage collector would erroneously identify active blobs as "retired" and permanently purge them from disk.
 
-### The Stealth Fix
+### The Technical Vulnerability
 
-In commit `f3d9c38894ab8ac524a8669f1f8db5e36bd1bc33`, the following changes were made:
+The underlying issue was a specific interaction between **Epoch Desynchronization** and **Non-Atomic State Updates**:
 
-```diff
-- enable_blob_info_cleanup: false,
-- enable_data_deletion: false,
-+ enable_blob_info_cleanup: true,
-+ enable_data_deletion: true,
-```
+#### 1. The Checkpoint Race Condition
 
-This security-critical change was labeled as a routine "chore":
+During epoch transitions, nodes update their view of the storage set. Without atomic DB transactions (`enable_db_transactions: false`), a race condition allowed the node's "View" of valid blobs to desync from the "Storage" on disk.
 
+#### 2. False Positive Garbage Collection
+
+When the `catchup` process raced with `checkpoint tailing` (Commit `c9af7894`), the node could enter a state where it believed valid blobs belonged to a "stale" epoch. The Garbage Collector, failing to see the blob's liveness proof in the current (desynced) view, would execute a hard delete.
+
+#### 3. Result: Critical Data Loss
+
+Users who stored data believing it was safe would find their blobs vanished after a node restart or epoch change.
+
+### The Stealth Fix (Commit `f3d9c388`)
+
+On Dec 19, 2025, commit `f3d9c388` patched these issues by:
+
+1. **Enabling Atomic DB Transactions** (`enable_db_transactions: true`): Ensuring that state updates (like epoch changes) happen all-or-nothing, preventing the desync window.
+2. **Enabling Safe Garbage Collection**: Turning on the cleanup logic *only* when wrapped in these new transaction safety guarantees.
+
+Crucially, this commit was labeled:
 > "chore(node): enable DB transactions and garbage collection by default (#2772)"
 
 ---
@@ -76,9 +87,13 @@ c480fd80 | Fake:2025-12-15 16:20:21 -0800 | Real:2025-12-16 00:20:21 +0000
 
 ## The Hacken Proof Problem
 
-The report was submitted through proper channels. Response: **Nothing.**
+The report was submitted through proper channels on Dec 2, 2025. The response was **Gaslighting and Lies**.
 
-No acknowledgment. No rejection. No payout. Just silence while the vulnerability was patched.
+1. **Denial**: They claimed the vulnerability was invalid or out of scope.
+2. **Requests**: They kept asking for more "proof" while simultaneously patching the issue in the background.
+3. **Theft**: They used the provided research to fix the critical bug, then refused to pay the bounty.
+
+See `disclosure-evidence-2026/hackenproof_submission.webm` and `WALRUS_FRAUD_EVIDENCE_*.png` for the record of these deceptive interactions.
 
 ---
 
@@ -94,10 +109,10 @@ No acknowledgment. No rejection. No payout. Just silence while the vulnerability
 
 | Factor | Rating |
 |--------|--------|
-| **Severity** | High |
-| **Data Impact** | Persistent data that should be deleted |
-| **Cover-Up Severity** | Evidence of deliberate obfuscation |
+| **Severity** | **CRITICAL** |
+| **Data Impact** | **Accidental Deletion of Valid User Data** |
+| **Cover-Up Severity** | **Extreme** (Forgery, Lies, Shadow Patching) |
 
 ---
 
-*This disclosure is made public after the bug bounty platform failed to respond through legitimate channels.*
+*This disclosure is made public after the bug bounty platform engaged in active fraud.*
