@@ -41,7 +41,7 @@ This security-critical change was labeled as a routine "chore":
 Forensic analysis of the commit history reveals **date/timezone discrepancies** suggesting possible history manipulation:
 
 | Commit | Author Date | Committer Date | Discrepancy |
-| -------- | ------------- | ---------------- | ------------- |
+|--------|-------------|----------------|-------------|
 | 651aea8a | 2025-12-29 11:04:12 -0500 | 2025-12-29 10:04:12 -0600 | 1hr offset |
 | af4ba5ed | 2025-12-18 19:14:33 +0200 | 2025-12-18 11:14:33 -0600 | 8hr offset |
 | d267da52 | 2025-12-18 08:57:36 +0100 | 2025-12-17 23:57:36 -0800 | 9hr offset |
@@ -53,7 +53,7 @@ While timezone differences can be legitimate, the pattern of discrepancies aroun
 
 ## Full Forgery Report
 
-```text
+```
 651aea8a | Fake:2025-12-29 11:04:12 -0500 | Real:2025-12-29 10:04:12 -0600
 af4ba5ed | Fake:2025-12-18 19:14:33 +0200 | Real:2025-12-18 11:14:33 -0600
 d267da52 | Fake:2025-12-18 08:57:36 +0100 | Real:2025-12-17 23:57:36 -0800
@@ -65,7 +65,7 @@ c480fd80 | Fake:2025-12-15 16:20:21 -0800 | Real:2025-12-16 00:20:21 +0000
 ## Timeline
 
 | Date | Event |
-| ------ | ------- |
+|------|-------|
 | Dec 2025 | Vulnerability discovered |
 | Dec 2025 | Reported via Hacken Proof |
 | Dec 19, 2025 | Commit f3d9c388 deploys fix as "chore" |
@@ -93,7 +93,7 @@ No acknowledgment. No rejection. No payout. Just silence while the vulnerability
 ## Impact Assessment
 
 | Factor | Rating |
-| -------- | -------- |
+|--------|--------|
 | **Severity** | High |
 | **Data Impact** | Persistent data that should be deleted |
 | **Cover-Up Severity** | Evidence of deliberate obfuscation |
