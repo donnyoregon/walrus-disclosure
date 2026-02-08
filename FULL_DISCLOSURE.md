@@ -1,6 +1,6 @@
 # Walrus (MystenLabs) Security Vulnerability Disclosure
 
-**Author**: donnyoregon  
+**Author**: Corrin Clark (arch)  
 **Date**: February 7, 2026  
 **Platform**: Hacken Proof (ignored)  
 **Status**: Public Disclosure After Platform Failure
