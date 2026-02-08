@@ -1,0 +1,49 @@
+commit f3d9c38894ab8ac524a8669f1f8db5e36bd1bc33 (tag: walrus_v1.40.0_1766148245_main_ci)
+Author: Markus Legner <mlegner@users.noreply.github.com>
+Date:   Fri Dec 19 09:45:27 2025 +0100
+
+    chore(node): enable DB transactions and garbage collection by default (#2772)
+    
+    This enables blob-info cleanup and data deletion, which were implemented
+    in previous PRs, as well as DB transactions by default.
+    
+    Also modifies the default batch sizes following test results on PTN,
+    Testnet, and Mainnet. The new values correspond to slightly less than
+    1s expected processing time per batch.
+    
+    Finally, adds mechanisms to validate the node config on load; in particular,
+    adds a check that DB transactions are enabled if data deletion is enabled.
+
+diff --git a/crates/walrus-service/src/node/garbage_collector.rs b/crates/walrus-service/src/node/garbage_collector.rs
+index 43c08aee..db75ca32 100644
+--- a/crates/walrus-service/src/node/garbage_collector.rs
++++ b/crates/walrus-service/src/node/garbage_collector.rs
+@@ -50,14 +50,12 @@ pub struct GarbageCollectionConfig {
+ impl Default for GarbageCollectionConfig {
+     fn default() -> Self {
+         Self {
+-            // TODO(WAL-1105): Enable this by default.
+-            enable_blob_info_cleanup: false,
+-            // TODO(WAL-1105): Enable this by default.
+-            enable_data_deletion: false,
++            enable_blob_info_cleanup: true,
++            enable_data_deletion: true,
+             enable_random_delay: true,
+             randomization_time_window: None,
+-            blob_objects_batch_size: 10_000,
+-            data_deletion_batch_size: 1000,
++            blob_objects_batch_size: 5000,
++            data_deletion_batch_size: 2000,
+         }
+     }
+ }
+@@ -72,7 +70,7 @@ impl GarbageCollectionConfig {
+             enable_random_delay: true,
+             randomization_time_window: Some(Duration::from_secs(1)),
+             blob_objects_batch_size: 10,
+-            data_deletion_batch_size: 10,
++            data_deletion_batch_size: 5,
+         }
+     }
+ }
+ ESC
