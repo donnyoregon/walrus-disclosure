@@ -1,0 +1,48 @@
+[33mcommit f3d9c38894ab8ac524a8669f1f8db5e36bd1bc33[m[33m ([m[1;33mtag: [m[1;33mwalrus_v1.40.0_1766148245_main_ci[m[33m)[m
+Author: Markus Legner <mlegner@users.noreply.github.com>
+Date:   Fri Dec 19 09:45:27 2025 +0100
+
+    chore(node): enable DB transactions and garbage collection by default (#2772)
+    
+    This enables blob-info cleanup and data deletion, which were implemented
+    in previous PRs, as well as DB transactions by default.
+    
+    Also modifies the default batch sizes following test results on PTN,
+    Testnet, and Mainnet. The new values correspond to slightly less than
+    1s expected processing time per batch.
+    
+    Finally, adds mechanisms to validate the node config on load; in particular,
+    adds a check that DB transactions are enabled if data deletion is enabled.
+
+[1mdiff --git a/crates/walrus-service/src/node/garbage_collector.rs b/crates/walrus-service/src/node/garbage_collector.rs[m
+[1mindex 43c08aee..db75ca32 100644[m
+[1m--- a/crates/walrus-service/src/node/garbage_collector.rs[m
+[1m+++ b/crates/walrus-service/src/node/garbage_collector.rs[m
+[36m@@ -50,14 +50,12 @@[m [mpub struct GarbageCollectionConfig {[m
+ impl Default for GarbageCollectionConfig {[m
+     fn default() -> Self {[m
+         Self {[m
+[31m-            // TODO(WAL-1105): Enable this by default.[m
+[31m-            enable_blob_info_cleanup: false,[m
+[31m-            // TODO(WAL-1105): Enable this by default.[m
+[31m-            enable_data_deletion: false,[m
+[32m+[m[32m            enable_blob_info_cleanup: true,[m
+[32m+[m[32m            enable_data_deletion: true,[m
+             enable_random_delay: true,[m
+             randomization_time_window: None,[m
+[31m-            blob_objects_batch_size: 10_000,[m
+[31m-            data_deletion_batch_size: 1000,[m
+[32m+[m[32m            blob_objects_batch_size: 5000,[m
+[32m+[m[32m            data_deletion_batch_size: 2000,[m
+         }[m
+     }[m
+ }[m
+[36m@@ -72,7 +70,7 @@[m [mimpl GarbageCollectionConfig {[m
+             enable_random_delay: true,[m
+             randomization_time_window: Some(Duration::from_secs(1)),[m
+             blob_objects_batch_size: 10,[m
+[31m-            data_deletion_batch_size: 10,[m
+[32m+[m[32m            data_deletion_batch_size: 5,[m
+         }[m
+     }[m
+ }[m
